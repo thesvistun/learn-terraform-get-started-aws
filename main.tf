@@ -64,21 +64,17 @@ data "aws_key_pair" "default" {
   key_name = "default"
 }
 
-resource "aws_instance" "ec2_terraform" {
+module "web" {
+  source = "./modules/ec2"
+
   ami           = data.aws_ami.amazon_linux.id
   instance_type = "t3.micro"
 
   subnet_id = module.vpc.public_subnets[0]
 
-  vpc_security_group_ids = [aws_security_group.sg_terraform.id]
+  security_group_ids = [aws_security_group.sg_terraform.id]
 
   key_name = data.aws_key_pair.default.key_name
 
-  associate_public_ip_address = true
-
-  tags = {
-    Name        = "learn-terraform"
-    Terraform   = "true"
-    Environment = "dev"
-  }
+  name = "learn-terraform"
 }
